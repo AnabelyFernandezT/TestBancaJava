@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress checks for generated code -->
+    <suppress checks=".*" files=".*[\\/]generated[\\/].*"/>
+    <suppress checks=".*" files=".*[\\/]target[\\/].*"/>
+    
+    <!-- Suppress for DTOs with many fields -->
+    <suppress checks="ParameterNumber" files=".*DTO\.java"/>
+    <suppress checks="ParameterNumber" files=".*Request\.java"/>
+    <suppress checks="ParameterNumber" files=".*Response\.java"/>
+    
+    <!-- Allow Lombok generated code -->
+    <suppress checks="HideUtilityClassConstructor" files=".*Application\.java"/>
+    <suppress checks="HideUtilityClassConstructor" files=".*Config\.java"/>
+</suppressions>
