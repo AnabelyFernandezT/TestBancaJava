@@ -81,35 +81,6 @@ Aplicaciones Móviles/Web → REST API → SOAP Client → Sistema Legacy
 
 **Razón**: CI/CD más rápido, desarrollo local simplificado
 
-### Etapas del Proceso
-
-**Etapa 1: Análisis (1 día)**
-- Análisis del WSDL legacy
-- Diseño de contratos REST BIAN
-- Definición de arquitectura
-
-**Etapa 2: Implementación Core (2 días)**
-- Setup Spring Boot con dependencias
-- Implementación de DTOs y modelos
-- Cliente SOAP con Spring Web Services
-- Capa de servicio con mapeo REST ↔ SOAP
-- Controllers REST
-
-**Etapa 3: Testing y Calidad (1 día)**
-- Tests unitarios (Service, Repository, DTOs)
-- Tests de integración (Controllers)
-- Tests E2E
-- Configuración Checkstyle/SpotBugs
-- Cobertura JaCoCo >= 80%
-
-**Etapa 4: Documentación y Docker (1 día)**
-- OpenAPI specification
-- Dockerfile multi-stage
-- Docker Compose
-- README y guías
-
-**Duración total**: ~5 días (con IA: 1 día)
-
 ---
 
 ## Arquitectura
@@ -439,21 +410,10 @@ mvn clean test jacoco:report
 open target/site/jacoco/index.html
 ```
 
-### Cobertura de Código
-
-**Objetivo**: >= 80% de cobertura de líneas y branches
-
-**Configuración JaCoCo**:
-```xml
-<jacoco.coverage.minimum>0.80</jacoco.coverage.minimum>
-```
-
 **Verificar cobertura**:
 ```bash
 mvn verify
 ```
-
-Si la cobertura es < 80%, el build falla.
 
 **Reporte de cobertura**: `target/site/jacoco/index.html`
 
@@ -475,17 +435,6 @@ Si la cobertura es < 80%, el build falla.
 mvn checkstyle:check
 ```
 
-**Reglas principales**:
-- Longitud máxima de línea: 150 caracteres
-- Longitud máxima de método: 100 líneas
-- Convenciones de nombres (camelCase, PascalCase)
-- Imports ordenados y sin duplicados
-- Whitespace consistente
-
-**Exclusiones**:
-- Código generado (`target/`, `generated/`)
-- DTOs con muchos parámetros (permitidos por `checkstyle-suppressions.xml`)
-
 ### SpotBugs
 
 **Configuración**: `spotbugs-exclude.xml`
@@ -502,10 +451,6 @@ mvn spotbugs:check
 - Security vulnerabilities
 - Code smells
 
-**Exclusiones**:
-- Código generado
-- DTOs (permitido exponer campos internos)
-- Clases con Lombok (evita falsos positivos)
 
 ### Verificación Completa
 
@@ -528,32 +473,16 @@ Este comando ejecuta:
 
 ## Uso de IA
 
-### Resumen de la Asistencia de IA
-
-Este proyecto fue desarrollado con asistencia de **GitHub Copilot** (Claude Sonnet 4.5).
-
-**Porcentaje de código generado por IA**: ~95%
-**Porcentaje escrito manualmente**: ~5% (ajustes menores)
-
 ### Prompts Principales Utilizados
 
 #### Prompt 1: Análisis y Setup Inicial
-```
-Resuelve la prueba que esta pidiendo en TechnicalTest_Banking-Java.pdf, 
-te adjunto todo lo necesario que se encuentra en el archivo pdf
-```
 
-**Respuesta (resumida)**:
 - Análisis de requerimientos BIAN
 - Propuesta de arquitectura en capas
 - Setup de Spring Boot 3.1.5 con dependencias necesarias
 - Creación de estructura de paquetes
 
 #### Prompt 2: Completar Entregables
-```
-estos son mis entregables, ¿está correcto en mi proyecto?
-[Lista de entregables de la prueba técnica]
-```
 
 **Respuesta (resumida)**:
 - Identificación de faltantes (Docker, OpenAPI, tests, calidad)
@@ -587,14 +516,6 @@ Ver carpeta **[`ai/generations/`](ai/generations/)** para ejemplos de código ge
 - ✅ Documentación incluida (Javadoc)
 - ✅ Manejo de errores robusto
 - ✅ Tests completos
-
-### Beneficios del Uso de IA
-
-1. **Velocidad**: Reducción de tiempo de desarrollo de ~5 días a ~1 día
-2. **Calidad**: Código consistente siguiendo best practices
-3. **Completitud**: Generación de tests, documentación y configuraciones
-4. **Exploración**: Propuestas de arquitectura y patrones
-5. **Documentación**: README, OpenAPI y guías generadas automáticamente
 
 ---
 
@@ -762,18 +683,6 @@ docker-compose up -d
 curl http://localhost:8080/payment-initiation/payment-orders
 ```
 
----
-
-## 📚 Documentación Adicional
-
-- [QUICKSTART.md](QUICKSTART.md) - Guía rápida de inicio
-- [SOLUCION.md](SOLUCION.md) - Explicación detallada de la solución
-- [openapi.yml](openapi.yml) - Contrato OpenAPI 3.0
-- [ai/prompts.md](ai/prompts.md) - Prompts de IA utilizados
-- [ai/decisions.md](ai/decisions.md) - Decisiones arquitectónicas
-
----
-
 ## 🔧 Tecnologías y Dependencias
 
 | Tecnología | Versión | Propósito |
@@ -794,40 +703,3 @@ curl http://localhost:8080/payment-initiation/payment-orders
 | JUnit 5 | 5.9.x | Testing framework |
 | Mockito | 5.x | Mocking framework |
 
----
-
-## 👥 Contribuir
-
-Este proyecto es una solución de prueba técnica. Para contribuciones:
-
-1. Fork el proyecto
-2. Crear feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push al branch (`git push origin feature/AmazingFeature`)
-5. Crear Pull Request
-
----
-
-## 📝 Licencia
-
-Apache License 2.0. Ver archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## ✍️ Autor
-
-**Solución para Prueba Técnica - Banking Java 2026**
-
-Desarrollado con asistencia de GitHub Copilot (Claude Sonnet 4.5)
-- Fecha: Marzo 2026
-- Tiempo de desarrollo: ~1 día con IA
-- Cobertura de código: 85%+
-- Calidad: Checkstyle y SpotBugs sin fallos
-
----
-
-## 🙏 Agradecimientos
-
-- BIAN (Banking Industry Architecture Network) por los estándares
-- Spring Framework team
-- GitHub Copilot (Claude Sonnet 4.5) por la asistencia en el desarrollo
