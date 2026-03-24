@@ -210,7 +210,7 @@ src/
 ```
 
 ## Requisitos Previos
-
+---
 - JDK 17 o superior
 - Maven 3.6 o superior
 - Docker y Docker Compose (opcional, para ejecución containerizada)
