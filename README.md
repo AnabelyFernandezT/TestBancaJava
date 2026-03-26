@@ -82,7 +82,7 @@ El banco contaba con un **servicio SOAP legacy** (`PaymentOrderService.wsdl`) pa
 ```
 - **Ventaja**: Dominio aislado de la infraestructura
 - **Resultado**: Cambio de tecnologías sin modificar lógica de negocio
-- **📖 Ver**: [ARQUITECTURA_HEXAGONAL.md](ARQUITECTURA_HEXAGONAL.md) para detalles completos
+
 
 #### 2. **Separación por Capas (Hexagonal)**
 - **Domain**: Entidades y lógica de negocio pura (sin dependencias)
@@ -489,11 +489,6 @@ mvn verify
 ```
 
 **Reporte de cobertura**: `target/site/jacoco/index.html`
-
-**Cobertura actual** (aproximada):
-- **Líneas**: ~85%
-- **Branches**: ~82%
-- **Clases**: 100%
 
 ---
 
