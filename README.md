@@ -36,13 +36,6 @@ Microservicio REST que implementa el estándar **BIAN (Banking Industry Architec
 - ✅ Calidad verificada con Checkstyle y SpotBugs
 - ✅ Dockerizado con multi-stage build
 - ✅ Documentación OpenAPI completa
-
-**📚 Documentación de Arquitectura**:
-- **[ARQUITECTURA_Y_SOLID.md](ARQUITECTURA_Y_SOLID.md)** - 📑 **Índice completo de documentación**
-- [ARQUITECTURA_HEXAGONAL.md](ARQUITECTURA_HEXAGONAL.md) - Guía completa de arquitectura hexagonal
-- [SOLID_PRINCIPLES.md](SOLID_PRINCIPLES.md) - Principios SOLID con ejemplos del proyecto
-- [ai/SOLID_EVIDENCE.md](ai/SOLID_EVIDENCE.md) - Evidencias concretas de cumplimiento SOLID
-
 ---
 
 ## Contexto y Proceso de Migración
@@ -576,7 +569,6 @@ Este comando ejecuta:
 **Archivos de evidencia**:
 - [`ai/prompts.md`](ai/prompts.md) - Prompts completos con contexto
 - [`ai/decisions.md`](ai/decisions.md) - Decisiones de diseño con ayuda de IA
-- [`ai/generations/`](ai/generations/) - Fragmentos de código generados
 
 ### Correcciones y Ajustes
 
