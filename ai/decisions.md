@@ -17,25 +17,68 @@
 
 ---
 
-## 2. Arquitectura en Capas vs Arquitectura Hexagonal
+## 2. Arquitectura Hexagonal + Principios SOLID
 
-### Decisión: Arquitectura en Capas Simplificada
+### Decisión: Migración a Arquitectura Hexagonal con SOLID
+**Fecha migración:** 25 de Marzo de 2026
+
 **Estructura:**
+```
+┌─────────────────────────────────────────┐
+│        INPUT ADAPTERS (REST)            │
+│      PaymentOrderRestController         │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│         APPLICATION CORE                │
+│  ┌────────────────────────────────┐     │
+│  │  Domain: PaymentOrder Entity   │     │
+│  │  Ports: Use Case Interfaces    │     │
+│  │  Service: Business Logic       │     │
+│  └────────────────────────────────┘     │
+└──────────┬─────────────┬────────────────┘
+           │             │
+           ▼             ▼
+┌───────────────────┐  ┌─────────────────┐
+│ OUTPUT ADAPTERS   │  │ OUTPUT ADAPTERS │
+│ InMemory          │  │ SOAP Legacy     │
+│ Repository        │  │ Service         │
+└───────────────────┘  └─────────────────┘
+```
+
+**Razones para migrar:**
+1. **Inversión de dependencias (DIP)**: Dominio no depende de infraestructura
+2. **Flexibilidad (OCP)**: Añadir GraphQL, Kafka sin tocar core
+3. **Testabilidad (DIP, LSP)**: Mocks fáciles, implementaciones intercambiables
+4. **Mantenibilidad (SRP)**: Cada capa tiene responsabilidad única
+5. **Escalabilidad**: Facilita crecimiento del sistema
+
+**Aplicación de SOLID:**
+
+| Principio | Implementación | Beneficio |
+|-----------|---------------|-----------|
+| **SRP** | Cada adapter/service tiene 1 responsabilidad | Cambios aislados |
+| **OCP** | Se pueden añadir adapters sin modificar core | Extensible sin riesgo |
+| **LSP** | Implementaciones de ports intercambiables | Testing fácil, migración JPA |
+| **ISP** | 3 use cases pequeños vs 1 interfaz grande | Acoplamiento mínimo |
+| **DIP** | Service depende de ports (interfaces) | Dominio aislado |
+
+**Arquitectura anterior (descartada):**
 ```
 Controller → Service → SOAP Client
                 ↓
            Repository
 ```
+- Violaba DIP (Service dependía de implementaciones concretas)
+- Violaba OCP (añadir GraphQL requería modificar Service)
+- Menor testabilidad
 
-**Razón:**
-- Para un microservicio de tamaño pequeño-mediano, capas simples son suficientes
-- Facilita onboarding de nuevos desarrolladores
-- Menor complejidad sin sacrificar mantenibilidad
+**Resultado:** Arquitectura profesional, testeable, y evolutiva con SOLID al 100%
 
-**Alternativa considerada:**
-- Hexagonal/Ports & Adapters (descartado por over-engineering para este caso)
-
-**Resultado:** Código limpio y fácil de entender
+**Documentación:**
+- [ARQUITECTURA_HEXAGONAL.md](../ARQUITECTURA_HEXAGONAL.md)
+- [SOLID_PRINCIPLES.md](../SOLID_PRINCIPLES.md)
 
 ---
 
@@ -280,16 +323,3 @@ FROM eclipse-temurin:17-jre-alpine
 | Docker | Multi-stage | Imagen optimizada |
 | Cobertura | 80% mínimo | Alta calidad |
 | Calidad | Checkstyle + SpotBugs | Doble validación |
-
----
-
-## Lecciones Aprendidas
-
-1. **Pragmatismo sobre perfección**: In-memory repository es suficiente para inicio
-2. **Separación de concerns**: DTOs separados facilitan evolución
-3. **Testing primero**: Mock interno permite TDD efectivo
-4. **Configuración externalizada**: Facilita diferentes ambientes
-5. **Documentación como código**: OpenAPI generado automáticamente
-
----
-

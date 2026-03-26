@@ -1,6 +1,6 @@
 package com.test.trestproject.controller;
 
-import com.test.trestproject.service.ResourceNotFoundException;
+import com.test.trestproject.domain.exception.PaymentOrderNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
     
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+    @ExceptionHandler(PaymentOrderNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(PaymentOrderNotFoundException ex) {
         logger.error("Resource not found: {}", ex.getMessage());
         
         Map<String, Object> errorResponse = new HashMap<>();

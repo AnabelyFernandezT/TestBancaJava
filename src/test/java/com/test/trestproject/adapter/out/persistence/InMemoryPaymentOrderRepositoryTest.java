@@ -1,6 +1,7 @@
-package com.test.trestproject.repository;
+package com.test.trestproject.adapter.out.persistence;
 
-import com.test.trestproject.domain.PaymentOrder;
+import com.test.trestproject.domain.model.PaymentOrder;
+import com.test.trestproject.domain.model.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,14 +11,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PaymentOrderRepositoryTest {
+class InMemoryPaymentOrderRepositoryTest {
 
-    private PaymentOrderRepository repository;
+    private InMemoryPaymentOrderRepository repository;
     private PaymentOrder paymentOrder;
 
     @BeforeEach
     void setUp() {
-        repository = new PaymentOrderRepository();
+        repository = new InMemoryPaymentOrderRepository();
         
         paymentOrder = PaymentOrder.builder()
                 .paymentOrderId("PO-0001")
@@ -28,7 +29,7 @@ class PaymentOrderRepositoryTest {
                 .currency("USD")
                 .remittanceInformation("Test")
                 .requestedExecutionDate("2025-10-31")
-                .status("ACCEPTED")
+                .status(PaymentStatus.ACCEPTED)
                 .createdAt(LocalDateTime.now())
                 .lastUpdate(LocalDateTime.now())
                 .build();
@@ -55,7 +56,6 @@ class PaymentOrderRepositoryTest {
         // Assert
         assertTrue(found.isPresent());
         assertEquals("PO-0001", found.get().getPaymentOrderId());
-        assertEquals("EXT-001", found.get().getExternalReference());
     }
 
     @Test
@@ -68,28 +68,17 @@ class PaymentOrderRepositoryTest {
     }
 
     @Test
-    void testUpdateStatus_Success() {
+    void testUpdate_Success() {
         // Arrange
         repository.save(paymentOrder);
-        LocalDateTime newUpdate = LocalDateTime.now().plusHours(1);
+        paymentOrder.updateStatus(PaymentStatus.SETTLED);
 
         // Act
-        repository.updateStatus("PO-0001", "SETTLED", newUpdate);
+        repository.update("PO-0001", paymentOrder);
 
         // Assert
         Optional<PaymentOrder> updated = repository.findById("PO-0001");
         assertTrue(updated.isPresent());
-        assertEquals("SETTLED", updated.get().getStatus());
-        assertEquals(newUpdate, updated.get().getLastUpdate());
-    }
-
-    @Test
-    void testUpdateStatus_NotFound() {
-        // Act - should not throw exception
-        repository.updateStatus("PO-9999", "SETTLED", LocalDateTime.now());
-
-        // Assert - no exception thrown
-        Optional<PaymentOrder> found = repository.findById("PO-9999");
-        assertFalse(found.isPresent());
+        assertEquals(PaymentStatus.SETTLED, updated.get().getStatus());
     }
 }

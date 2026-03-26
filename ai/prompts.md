@@ -3,13 +3,6 @@
 
 ## Prompt 1: Análisis Inicial y Configuración del Proyecto
 
-**Prompt:**
-```
-RAnaliza el archivo TechnicalTest_Banking-Java.pdf, 
-te adjunto todo lo necesario que se encuentra en el archivo pdf
-```
-
-
 **Respuesta (resumida):**
 La IA analizó los requerimientos y propuso:
 1. Crear un microservicio REST con Spring Boot 3.1.5

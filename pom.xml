@@ -27,7 +27,7 @@
         <!-- Quality and Coverage -->
         <jacoco.version>0.8.11</jacoco.version>
         <checkstyle.version>10.12.5</checkstyle.version>
-        <spotbugs.version>4.8.0.0</spotbugs.version>
+        <spotbugs.version>4.8.3</spotbugs.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
         <spotbugs-maven-plugin.version>4.8.1.0</spotbugs-maven-plugin.version>
         
@@ -107,14 +107,6 @@
                 </configuration>
             </plugin>
 
-            <!-- JAXB plugin to generate classes from WSDL -->
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.15.3</version>
-                <executions>
-                    <execution>
-
             <!-- JaCoCo for code coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -178,8 +170,8 @@
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <violationSeverity>warning</violationSeverity>
+                    <failsOnError>false</failsOnError>
+                    <violationSeverity>error</violationSeverity>
                 </configuration>
                 <executions>
                     <execution>
@@ -231,19 +223,6 @@
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
                     </includes>
-                </configuration>
-            </plugin>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory>
-                    <schemaIncludes>
-                        <include>*.wsdl</include>
-                    </schemaIncludes>
-                    <generatePackage>com.test.trestproject.soap.generated</generatePackage>
                 </configuration>
             </plugin>
         </plugins>

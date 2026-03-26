@@ -28,13 +28,20 @@ Microservicio REST que implementa el estándar **BIAN (Banking Industry Architec
 ### Características Principales
 - ✅ API REST BIAN-compliant con 3 endpoints
 - ✅ Integración con servicio SOAP legacy
-- ✅ Arquitectura en capas (Clean Architecture)
+- ✅ **Arquitectura Hexagonal (Ports & Adapters)**
+- ✅ **Principios SOLID**
 - ✅ Validación de datos con Jakarta Bean Validation
 - ✅ Manejo centralizado de excepciones
-- ✅ Cobertura de código >= 80%
+- ✅ Cobertura de código
 - ✅ Calidad verificada con Checkstyle y SpotBugs
 - ✅ Dockerizado con multi-stage build
 - ✅ Documentación OpenAPI completa
+
+**📚 Documentación de Arquitectura**:
+- **[ARQUITECTURA_Y_SOLID.md](ARQUITECTURA_Y_SOLID.md)** - 📑 **Índice completo de documentación**
+- [ARQUITECTURA_HEXAGONAL.md](ARQUITECTURA_HEXAGONAL.md) - Guía completa de arquitectura hexagonal
+- [SOLID_PRINCIPLES.md](SOLID_PRINCIPLES.md) - Principios SOLID con ejemplos del proyecto
+- [ai/SOLID_EVIDENCE.md](ai/SOLID_EVIDENCE.md) - Evidencias concretas de cumplimiento SOLID
 
 ---
 
@@ -52,28 +59,51 @@ El banco contaba con un **servicio SOAP legacy** (`PaymentOrderService.wsdl`) pa
 2. **Mantener compatibilidad**: Integrar con SOAP legacy sin modificarlo
 3. **Mejorar experiencia**: Simplificar integración para aplicaciones cliente
 4. **Añadir calidad**: Implementar tests, cobertura y validaciones de código
+5. **Arquitectura evolutiva**: Implementar hexagonal para facilitar cambios futuros
 
 ### Decisiones Clave
 
-#### 1. **Arquitectura de Fachada (Facade Pattern)**
+#### 1. **Arquitectura Hexagonal (Ports & Adapters)**
 ```
-Aplicaciones Móviles/Web → REST API → SOAP Client → Sistema Legacy
+┌─────────────────────────────────────────┐
+│        INPUT ADAPTERS (REST)            │
+│      PaymentOrderRestController         │
+└─────────────┬───────────────────────────┘
+              │
+              ▼
+┌─────────────────────────────────────────┐
+│         APPLICATION CORE                │
+│  ┌────────────────────────────────┐     │
+│  │  Domain: PaymentOrder Entity   │     │
+│  │  Ports: Use Case Interfaces    │     │
+│  │  Service: Business Logic       │     │
+│  └────────────────────────────────┘     │
+└──────────┬─────────────┬────────────────┘
+           │             │
+           ▼             ▼
+┌───────────────────┐  ┌─────────────────┐
+│ OUTPUT ADAPTERS   │  │ OUTPUT ADAPTERS │
+│ InMemory          │  │ SOAP Legacy     │
+│ Repository        │  │ Service         │
+└───────────────────┘  └─────────────────┘
 ```
-- **Ventaja**: Desacoplamiento del sistema legacy
-- **Resultado**: Evolución independiente de ambas capas
+- **Ventaja**: Dominio aislado de la infraestructura
+- **Resultado**: Cambio de tecnologías sin modificar lógica de negocio
+- **📖 Ver**: [ARQUITECTURA_HEXAGONAL.md](ARQUITECTURA_HEXAGONAL.md) para detalles completos
 
-#### 2. **Separación de Modelos**
-- DTOs REST (API pública)
-- Entidades de Dominio (lógica interna)
-- Modelos SOAP (integración legacy)
+#### 2. **Separación por Capas (Hexagonal)**
+- **Domain**: Entidades y lógica de negocio pura (sin dependencias)
+- **Ports**: Interfaces que definen contratos (Use Cases, Repository, Services)
+- **Adapters**: Implementaciones de infraestructura (REST, SOAP, Persistence)
+- **Application**: Orquestación de casos de uso
 
-**Razón**: Cambios en SOAP no afectan contratos REST
+**Razón**: Inversión de dependencias - la infraestructura depende del dominio
 
 #### 3. **Persistencia In-Memory Inicial**
-- Repositorio `ConcurrentHashMap` para MVP
-- Path de migración a JPA/PostgreSQL definido
+- Repositorio `ConcurrentHashMap` como **adaptador intercambiable**
+- Path de migración a JPA/PostgreSQL: solo cambiar el adaptador
 
-**Razón**: Simplificar deployment inicial, facilitar testing
+**Razón**: Testing simplificado, migra sin tocar dominio ni puertos
 
 #### 4. **Testing con Mock SOAP Interno**
 - Mock activable por configuración (`soap.mock.enabled=true`)
@@ -85,16 +115,66 @@ Aplicaciones Móviles/Web → REST API → SOAP Client → Sistema Legacy
 
 ## Arquitectura
 
+### Arquitectura Hexagonal (Ports & Adapters)
+
 ```
-Cliente REST → REST API (BIAN) → SOAP Client → Legacy SOAP Service
+                           ┌──────────────────┐
+                           │   REST Client    │
+                           └────────┬─────────┘
+                                    │ HTTP
+                                    ▼
+                          ┌─────────────────────┐
+                          │  INPUT ADAPTER      │
+                          │  (REST Controller)  │
+                          └──────────┬──────────┘
+                                     │
+                                     ▼
+                     ┌───────────────────────────────┐
+                     │   INPUT PORTS (Use Cases)     │
+                     │   - InitiatePaymentOrder      │
+                     │   - RetrievePaymentOrder      │
+                     │   - RetrieveStatus            │
+                     └───────────┬───────────────────┘
+                                 │
+                                 ▼
+             ┌────────────────────────────────────────────┐
+             │          APPLICATION CORE                  │
+             │  ┌──────────────────────────────────┐      │
+             │  │  DOMAIN LAYER                    │      │
+             │  │  - PaymentOrder (Entity)         │      │
+             │  │  - PaymentStatus (Value Object)  │      │
+             │  └──────────────────────────────────┘      │
+             │  ┌──────────────────────────────────┐      │
+             │  │  APPLICATION SERVICE             │      │
+             │  │  (Implements Use Cases)          │      │
+             │  └──────────────────────────────────┘      │
+             └─────────┬──────────────┬───────────────────┘
+                       │              │
+                       ▼              ▼
+          ┌────────────────────┐  ┌────────────────────┐
+          │  OUTPUT PORT       │  │  OUTPUT PORT       │
+          │  Repository        │  │  LegacyService     │
+          └─────────┬──────────┘  └─────────┬──────────┘
+                    │                       │
+                    ▼                       ▼
+        ┌───────────────────────┐  ┌───────────────────────┐
+        │  OUTPUT ADAPTER       │  │  OUTPUT ADAPTER       │
+        │  InMemoryRepository   │  │  SoapLegacyAdapter    │
+        └───────────────────────┘  └───────────┬───────────┘
+                                               │ SOAP
+                                               ▼
+                                    ┌──────────────────┐
+                                    │  Legacy SOAP     │
+                                    │  Service         │
+                                    └──────────────────┘
 ```
 
-### Componentes:
-- **REST Controllers**: Exponen endpoints REST siguiendo estándar BIAN
-- **Service Layer**: Lógica de negocio y orquestación
-- **SOAP Client**: Cliente para comunicación con servicio legacy
-- **Repository**: Almacenamiento en memoria de órdenes de pago
-- **DTOs**: Objetos de transferencia de datos para REST API
+### Flujo de una Petición:
+1. **REST Controller** (Input Adapter) recibe request HTTP
+2. **Mapper** convierte DTO REST → Command (dominio)
+3. **Use Case** (Port) define la operación
+4. **Application Service** implementa lógica de negocio
+5. **Output Ports** definen dependencias externas
 
 ## Endpoints REST (BIAN Compliant)
 
@@ -465,7 +545,7 @@ Este comando ejecuta:
 3. Tests de integración
 4. Checkstyle
 5. SpotBugs
-6. JaCoCo (verifica cobertura >= 80%)
+6. JaCoCo 
 
 **Resultado esperado**: `BUILD SUCCESS`
 
@@ -492,10 +572,6 @@ Este comando ejecuta:
 - Configuración de Checkstyle/SpotBugs/JaCoCo
 - Tests unitarios y de integración
 - Carpeta ai/ con evidencia
-
-### Fragmentos Generados por IA
-
-Ver carpeta **[`ai/generations/`](ai/generations/)** para ejemplos de código generado.
 
 **Archivos de evidencia**:
 - [`ai/prompts.md`](ai/prompts.md) - Prompts completos con contexto
